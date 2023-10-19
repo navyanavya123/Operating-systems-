@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
+// Define a message structure
+struct message {
+    long mtype; // Message type (must be greater than 0)
+    char mtext[100]; // Message content
+};
+
+int main() {
+    key_t key;
+    int msgid;
+    struct message msg;
+
+    // Generate a unique key for the message queue
+    if ((key = ftok("msgq_example", 'B')) == -1) {
+        perror("ftok");
+        exit(1);
+    }
+
+    // Create a message queue with read and write permissions
+    if ((msgid = msgget(key, 0666 | IPC_CREAT)) == -1) {
+        perror("msgget");
+        exit(1);
+    }
+
+    pid_t child_pid = fork();
+
+    if (child_pid < 0) {
+        perror("fork");
+        exit(1);
+    }
+
+    if (child_pid == 0) {
+        // Child process: Receive and display the message
+        if (msgrcv(msgid, &msg, sizeof(msg.mtext), 1, 0) == -1) {
+            perror("msgrcv");
+            exit(1);
+        }
+
+        printf("Child received message: %s\n", msg.mtext);
+    } else {
+        // Parent process: Send a message to the child
+        strcpy(msg.mtext, "Hello from the parent!");
+        msg.mtype = 1;
+
+        if (msgsnd(msgid, &msg, sizeof(msg.mtext), 0) == -1) {
+            perror("msgsnd");
+            exit(1);
+        }
+
+        printf("Parent sent message: %s\n", msg.mtext);
+    }
+
+    return 0;
+}
