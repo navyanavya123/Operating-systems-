@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Constants
+#define TOTAL_TRACKS 200
+#define START_TRACK 50
+
+// Function to sort an array in ascending order
+void sort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int request_queue[] = {95, 180, 34, 119, 11, 123, 62, 64};
+    int queue_size = sizeof(request_queue) / sizeof(request_queue[0]);
+    
+    // Sort the request queue in ascending order
+    sort(request_queue, queue_size);
+    
+    // Find the index of the starting track
+    int start_index = 0;
+    while (start_index < queue_size && request_queue[start_index] < START_TRACK) {
+        start_index++;
+    }
+    
+    // Perform C-SCAN
+    printf("C-SCAN Sequence: ");
+    for (int i = start_index; i < queue_size; i++) {
+        printf("%d ", request_queue[i]);
+    }
+    
+    // Go to the end of the disk
+    printf("%d ", TOTAL_TRACKS - 1);
+    
+    for (int i = 0; i < start_index; i++) {
+        printf("%d ", request_queue[i]);
+    }
+    
+    printf("0\n");
+    
+    return 0;
+}
