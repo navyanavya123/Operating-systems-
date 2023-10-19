@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the maximum number of records in the file
+#define MAX_RECORDS 100
+
+// Define the size of each record
+#define RECORD_SIZE 256
+
+// Structure to represent a record
+struct Record {
+    char data[RECORD_SIZE];
+};
+
+int main() {
+    // Create an array to store the records
+    struct Record file[MAX_RECORDS];
+
+    int totalRecords = 0;
+
+    // Function to add a new record to the file
+    void addRecord(const char *data) {
+        if (totalRecords < MAX_RECORDS) {
+            strcpy(file[totalRecords].data, data);
+            totalRecords++;
+        } else {
+            printf("File is full. Cannot add more records.\n");
+        }
+    }
+
+    // Function to read all records
+    void readAllRecords() {
+        printf("Reading all records:\n");
+        for (int i = 0; i < totalRecords; i++) {
+            printf("Record %d: %s\n", i + 1, file[i].data);
+        }
+    }
+
+    // Simulate adding records
+    addRecord("Record 1 data");
+    addRecord("Record 2 data");
+    addRecord("Record 3 data");
+
+    // Simulate reading all records
+    readAllRecords();
+
+    return 0;
+}
