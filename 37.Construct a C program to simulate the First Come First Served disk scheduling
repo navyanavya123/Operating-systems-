@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Maximum number of tracks on the disk
+#define MAX_TRACKS 200
+
+// Function to perform FCFS disk scheduling
+void fcfsDiskScheduling(int requestQueue[], int requestCount, int initialPosition) {
+    int totalMovement = 0;
+
+    // Start at the initial position
+    int currentPosition = initialPosition;
+
+    printf("Sequence of disk accesses:\n");
+
+    for (int i = 0; i < requestCount; i++) {
+        int track = requestQueue[i];
+
+        printf("Track %d -> ", track);
+
+        // Calculate the distance to the requested track
+        int distance = abs(track - currentPosition);
+
+        // Update the total movement
+        totalMovement += distance;
+
+        // Move the read/write head to the requested track
+        currentPosition = track;
+    }
+
+    printf("\nTotal head movement: %d\n", totalMovement);
+}
+
+int main() {
+    int requestQueue[] = {98, 183, 37, 122, 14, 124, 65, 67};
+    int requestCount = sizeof(requestQueue) / sizeof(requestQueue[0]);
+
+    int initialPosition = 53;  // Initial position of the read/write head
+
+    fcfsDiskScheduling(requestQueue, requestCount, initialPosition);
+
+    return 0;
+}
