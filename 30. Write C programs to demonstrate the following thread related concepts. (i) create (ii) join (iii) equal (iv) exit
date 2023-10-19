@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include <pthread.h>
+
+void *threadFunction(void *arg) {
+    printf("This is a new thread!\n");
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, threadFunction, NULL) == 0) {
+        printf("Main thread: New thread created successfully!\n");
+        pthread_join(thread, NULL); // Wait for the new thread to finish
+    } else {
+        printf("Main thread: Failed to create a new thread.\n");
+    }
+    return 0;
+}
