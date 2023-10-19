@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+#define MAX_FRAMES 3 // Number of page frames
+
+int main() {
+    int frames[MAX_FRAMES]; // Array to store page frames
+    int pages[] = {1, 2, 3, 4, 2, 1, 5, 6, 2, 1, 2, 3, 7}; // Reference string
+    int page_count = sizeof(pages) / sizeof(pages[0]);
+    int frame_count = 0; // Number of frames currently in use
+    int page_faults = 0; // Counter for page faults
+
+    for (int i = 0; i < page_count; i++) {
+        int page = pages[i];
+        int page_found = 0;
+
+        // Check if the page is already in a frame
+        for (int j = 0; j < frame_count; j++) {
+            if (frames[j] == page) {
+                page_found = 1;
+                break;
+            }
+        }
+
+        if (!page_found) {
+            // Page fault: replace the oldest page in memory
+            if (frame_count < MAX_FRAMES) {
+                frames[frame_count++] = page;
+            } else {
+                // Find the oldest page in memory (the one at the front)
+                int oldest_index = 0;
+                for (int j = 1; j < MAX_FRAMES; j++) {
+                    if (frames[j] == frames[oldest_index]) {
+                        oldest_index = j;
+                    }
+                }
+                frames[oldest_index] = page;
+            }
+
+            page_faults++;
+        }
+
+        // Display the current state of memory
+        printf("Page %d: [", page);
+        for (int j = 0; j < frame_count; j++) {
+            printf("%d", frames[j]);
+            if (j < frame_count - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+    }
+
+    printf("Total Page Faults: %d\n", page_faults);
+
+    return 0;
+}
