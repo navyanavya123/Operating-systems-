@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+int main() {
+    // Create a file pointer
+    FILE *file;
+
+    // Create a new file for writing
+    file = fopen("example.txt", "w");
+
+    if (file == NULL) {
+        perror("Error opening the file");
+        return 1;
+    }
+
+    // Write data to the file
+    fprintf(file, "This is a line of text.\n");
+    fprintf(file, "And this is another line.\n");
+
+    // Close the file
+    fclose(file);
+
+    // Reopen the file for reading
+    file = fopen("example.txt", "r");
+
+    if (file == NULL) {
+        perror("Error opening the file");
+        return 1;
+    }
+
+    // Read and print the content of the file
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
+
+    // Close the file again
+    fclose(file);
+
+    return 0;
+}
