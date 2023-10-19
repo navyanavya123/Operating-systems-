@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <dirent.h>
+
+int main(int argc, char *argv[]) {
+    struct dirent *de;
+    DIR *dr;
+
+    // Check if a directory path is provided as an argument
+    if (argc < 2) {
+        printf("Usage: %s <directory_path>\n", argv[0]);
+        return 1;
+    }
+
+    // Open the directory
+    dr = opendir(argv[1]);
+
+    if (dr == NULL) {
+        perror("Error opening directory");
+        return 1;
+    }
+
+    // List the contents of the directory
+    while ((de = readdir(dr)) != NULL) {
+        printf("%s\n", de->d_name);
+    }
+
+    // Close the directory
+    closedir(dr);
+
+    return 0;
+}
