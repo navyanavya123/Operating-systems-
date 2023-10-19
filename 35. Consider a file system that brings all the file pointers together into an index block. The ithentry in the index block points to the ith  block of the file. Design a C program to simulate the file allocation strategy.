@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the maximum number of file blocks
+#define MAX_BLOCKS 100
+
+// Structure to represent a file block
+struct FileBlock {
+    char data[512]; // Assuming a block size of 512 bytes
+};
+
+// Structure to represent the index block
+struct IndexBlock {
+    int blockPointers[MAX_BLOCKS];
+};
+
+int main() {
+    // Create an array to store file blocks
+    struct FileBlock file[MAX_BLOCKS];
+
+    // Create an index block
+    struct IndexBlock indexBlock;
+
+    int totalBlocks = 0;
+
+    // Function to add data to a file block
+    void addDataToBlock(int blockIndex, const char *data) {
+        if (blockIndex >= 0 && blockIndex < totalBlocks) {
+            strcpy(file[blockIndex].data, data);
+        } else {
+            printf("Block index is out of range.\n");
+        }
+    }
+
+    // Function to read data from a file block
+    void readDataFromBlock(int blockIndex) {
+        if (blockIndex >= 0 && blockIndex < totalBlocks) {
+            printf("Data in Block %d: %s\n", blockIndex, file[blockIndex].data);
+        } else {
+            printf("Block index is out of range.\n");
+        }
+    }
+
+    // Function to allocate a new block in the file
+    int allocateBlock() {
+        if (totalBlocks < MAX_BLOCKS) {
+            return totalBlocks++;
+        } else {
+            printf("File is full. Cannot allocate more blocks.\n");
+            return -1;
+        }
+    }
+
+    // Simulate adding data to file blocks
+    int block1 = allocateBlock();
+    addDataToBlock(block1, "Data in Block 1");
+    int block2 = allocateBlock();
+    addDataToBlock(block2, "Data in Block 2");
+
+    // Simulate reading data from file blocks
+    readDataFromBlock(block1);
+    readDataFromBlock(block2);
+
+    return 0;
+}
