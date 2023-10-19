@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define the maximum number of disk blocks
+#define MAX_BLOCKS 100
+
+// Structure to represent a file block
+struct FileBlock {
+    char data[512];  // Assuming a block size of 512 bytes
+    int nextBlock;   // Pointer to the next block
+};
+
+// Structure to represent a file
+struct File {
+    int firstBlock;  // Pointer to the first block
+    int lastBlock;   // Pointer to the last block
+};
+
+// Array to represent disk blocks
+struct FileBlock disk[MAX_BLOCKS];
+
+// Array to represent files
+struct File directory[MAX_BLOCKS];
+
+int totalBlocks = 0;
+int totalFiles = 0;
+
+// Function to create a new file
+int createFile() {
+    if (totalFiles < MAX_BLOCKS) {
+        int fileIndex = totalFiles++;
+        directory[fileIndex].firstBlock = -1;  // Initialize to -1 (no blocks yet)
+        directory[fileIndex].lastBlock = -1;
+        return fileIndex;
+    } else {
+        printf("Directory is full. Cannot create more files.\n");
+        return -1;
+    }
+}
+
+// Function to allocate a new block
+int allocateBlock() {
+    if (totalBlocks < MAX_BLOCKS) {
+        int blockIndex = totalBlocks++;
+        disk[blockIndex].nextBlock = -1;  // Initialize to -1 (no next block yet)
+        return blockIndex;
+    } else {
+        printf("Disk is full. Cannot allocate more blocks.\n");
+        return -1;
+    }
+}
+
+// Function to add data to a block
+void addDataToBlock(int blockIndex, const char *data) {
+    if (blockIndex >= 0 && blockIndex < totalBlocks) {
+        strcpy(disk[blockIndex].data, data);
+    } else {
+        printf("Block index is out of range.\n");
+    }
+}
+
+// Function to append a block to a file
+void appendBlockToFile(int fileIndex, int blockIndex) {
+    if (fileIndex >= 0 && fileIndex < totalFiles && blockIndex >= 0 && blockIndex < totalBlocks) {
+        if (directory[fileIndex].lastBlock == -1) {
+            // If it's the first block of the file
+            directory[fileIndex].firstBlock = blockIndex;
+        } else {
+            // If it's not the first block, update the nextBlock pointer of the previous block
+            disk[directory[fileIndex].lastBlock].nextBlock = blockIndex;
+        }
+        directory[fileIndex].lastBlock = blockIndex;
+    } else {
+        printf("File or block index is out of range.\n");
+    }
+}
+
+// Function to read data from a file
+void readFile(int fileIndex) {
+    if (fileIndex >= 0 && fileIndex < totalFiles) {
+        int blockIndex = directory[fileIndex].firstBlock;
+        printf("Reading data from File %d:\n", fileIndex);
+        while (blockIndex != -1) {
+            printf("%s", disk[blockIndex].data);
+            blockIndex = disk[blockIndex].nextBlock;
+        }
+        printf("\n");
+    } else {
+        printf("File index is out of range.\n");
+    }
+}
+
+int main() {
+    // Create a new file
+    int file1 = createFile();
+
+    // Allocate and add data to blocks
+    int block1 = allocateBlock();
+    addDataToBlock(block1, "Data in Block 1");
+    int block2 = allocateBlock();
+    addDataToBlock(block2, "Data in Block 2");
+
+    // Append blocks to the file
+    appendBlockToFile(file1, block1);
+    appendBlockToFile(file1, block2);
+
+    // Read data from the file
+    readFile(file1);
+
+    return 0;
+}
