@@ -1,0 +1,50 @@
+
+Products
+Join Stack Overflow to find the best answer to your technical question, help others answer theirs.
+
+Readers-Writers Problem in C using pthreads and semaphores
+Asked 4 years ago
+Modified 4 years ago
+Viewed 25k times
+1
+
+I'm trying to create the readers-writers scenario through C code but I'm stuck at trying to break off the readers code in the middle so that a reader does not just enter and exit, it stays and more readers can add.
+
+My current program doesn't enter more than one reader, as soon as one enters, it will leave then writer would come.
+
+I've tried using sleep() but including unistd library really destroys half the code with errors
+
+#include<semaphore.h>
+#include<stdio.h>
+#include<stdlib.h>
+sem_t x,y;
+pthread_t tid;
+pthread_t writerthreads[100],readerthreads[100];
+int readercount;
+
+void *reader(void* param)
+{
+    sem_wait(&x);
+    readercount++;
+    if(readercount==1)
+    sem_wait(&y);
+    sem_post(&x);
+    printf("\n%d reader is inside",readercount);
+    sem_wait(&x);
+    readercount--;
+    if(readercount==0)
+    {
+        sem_post(&y);
+    }
+    sem_post(&x);
+    printf("\n%d Reader is leaving",readercount+1);
+}
+
+void *writer(void* param)
+{
+    printf("\nWriter is trying to enter");
+    sem_wait(&y);
+    printf("\nWriter has entered");
+    sem_post(&y);
+    printf("\nWriter is leaving");
+}
