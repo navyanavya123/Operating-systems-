@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int disk_queue[100], n, head, i, seek_sequence[100], seek_time = 0;
+    
+    printf("Enter the number of disk queue requests: ");
+    scanf("%d", &n);
+    
+    printf("Enter the initial head position: ");
+    scanf("%d", &head);
+    
+    printf("Enter the disk queue elements: ");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &disk_queue[i]);
+    }
+    
+    int max_cylinder = 199; // Maximum cylinder number (assume total cylinders)
+    int min_cylinder = 0;   // Minimum cylinder number
+    
+    // Sort the disk queue in ascending order
+    for (i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (disk_queue[i] > disk_queue[j]) {
+                int temp = disk_queue[i];
+                disk_queue[i] = disk_queue[j];
+                disk_queue[j] = temp;
+            }
+        }
+    }
+    
+    int left_pos = head;    // Left head position
+    int right_pos = head;   // Right head position
+    
+    for (i = 0; i < n; i++) {
+        if (disk_queue[i] > head) {
+            left_pos = i - 1;
+            break;
+        }
+    }
+    
+    right_pos = left_pos + 1;
+    
+    for (i = 0; i < n; i++) {
+        if (right_pos < n) {
+            int move = abs(disk_queue[right_pos] - head);
+            seek_sequence[i] = disk_queue[right_pos];
+            seek_time += move;
+            head = disk_queue[right_pos];
+            right_pos++;
+        } else {
+            int move = abs(disk_queue[left_pos] - head);
+            seek_sequence[i] = disk_queue[left_pos];
+            seek_time += move;
+            head = disk_queue[left_pos];
+            left_pos--;
+        }
+    }
+    
+    printf("Seek Sequence: ");
+    for (i = 0; i < n; i++) {
+        printf("%d", seek_sequence[i]);
+        if (i < n - 1) {
+            printf(" -> ");
+        }
+    }
+    
+    printf("\nTotal Seek Time: %d\n", seek_time);
+    
+    return 0;
+}
